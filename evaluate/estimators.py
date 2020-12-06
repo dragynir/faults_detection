@@ -216,5 +216,5 @@ class LUKEstimator(object):
                 true_slice = self.faults_map[iline, x_start:x_end, y_start:y_end].T
                 pred_slice = pred_mask[iline, x_start:x_end, y_start:y_end].T
                 seismic = cube[iline, x_start:x_end, y_start:y_end].T
-                self.metrics_logger.log(pred_slice, true_slice, seismic, [iline] + bbox, iteration)
+                self.metrics_logger.log(pred_slice, true_slice, seismic, [iline] + list(bbox), iteration)
                 iteration+=1
