@@ -65,8 +65,8 @@ class F3Estimator(object):
             y = sample[2] # time
             end_x = sample[3]
             end_y = sample[4]
-            bbox = [x, y, end_x, end_y]
-
+            bbox = [i, x, y, end_x, end_y]
+x
             if abs(end_x - slice_shape[0]) < 10:
                 end_x = slice_shape[0]
             if abs(end_y - slice_shape[1]) < 10:
@@ -210,11 +210,11 @@ class LUKEstimator(object):
     def estimate(self, cube, pred_mask):        
 
         iteration = 0
-        for xline, bboxes in self.bbox_with_faults.items():
+        for iline, bboxes in self.bbox_with_faults.items():
             for bbox in bboxes:
                 x_start, y_start, x_end, y_end = bbox
-                true_slice = self.faults_map[xline, x_start:x_end, y_start:y_end].T
-                pred_slice = pred_mask[xline, x_start:x_end, y_start:y_end].T
-                seismic = cube[xline, x_start:x_end, y_start:y_end].T
-                self.metrics_logger.log(pred_slice, true_slice, seismic, bbox, iteration)
+                true_slice = self.faults_map[iline, x_start:x_end, y_start:y_end].T
+                pred_slice = pred_mask[iline, x_start:x_end, y_start:y_end].T
+                seismic = cube[iline, x_start:x_end, y_start:y_end].T
+                self.metrics_logger.log(pred_slice, true_slice, seismic, [iline] + bbox, iteration)
                 iteration+=1
