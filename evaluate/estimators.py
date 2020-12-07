@@ -56,6 +56,12 @@ class F3Estimator(object):
         
         return faults_map, bbox_with_faults
 
+    
+    def dilate_mask(self, mask):
+        kernel = np.ones((2,2), np.uint8)
+        dilation = cv2.dilate(mask, kernel, iterations=1)
+        return dilation
+
     def estimate(self, cube, pred_mask): 
         slice_shape = (462, 951)
 
@@ -73,7 +79,7 @@ class F3Estimator(object):
                 end_y = slice_shape[1]
 
             seismic = cube[i][x:end_x, y:end_y].T
-            true_slice = self.faults_map[i][x:end_x, y:end_y].T
+            true_slice = self.dilate_mask(self.faults_map[i][x:end_x, y:end_y].T)
             pred_slice = pred_mask[i][x:end_x, y:end_y].T
 
             self.metrics_logger.log(pred_slice, true_slice, seismic, bbox, iteration)
@@ -205,15 +211,18 @@ class LUKEstimator(object):
         return faults_map, bbox_with_faults
 
 
+    def dilate_mask(self, mask):
+        kernel = np.ones((2,2), np.uint8)
+        dilation = cv2.dilate(mask, kernel, iterations=1)
+        return dilation
 
     
     def estimate(self, cube, pred_mask):        
-
         iteration = 0
         for iline, bboxes in self.bbox_with_faults.items():
             for bbox in bboxes:
                 x_start, y_start, x_end, y_end = bbox
-                true_slice = self.faults_map[iline, x_start:x_end, y_start:y_end].T
+                true_slice = self.dilate_mask(self.faults_map[iline, x_start:x_end, y_start:y_end].T)
                 pred_slice = pred_mask[iline, x_start:x_end, y_start:y_end].T
                 seismic = cube[iline, x_start:x_end, y_start:y_end].T
                 self.metrics_logger.log(pred_slice, true_slice, seismic, [iline] + list(bbox), iteration)
