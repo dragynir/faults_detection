@@ -149,7 +149,7 @@ class LUKEstimator(object):
                 y = df['y'][i]
                 z = df['z'][i]
                 if prev_x != -1 and df['faults_end'][i] != 1:
-                    mask_sgy[x] = cv2.line(mask_sgy[x], (prev_z, prev_y), (z, y), (100), 1)
+                    mask_sgy[x] = cv2.line(mask_sgy[x], (prev_z, prev_y), (z, y), (1), 1)
                     
                 prev_x, prev_y, prev_z = x, y, z
 
