@@ -73,7 +73,7 @@ class Precision(nn.Module):
 
         precision = (TP + self.smooth) / (TP + FP + self.smooth)
 
-        return precision
+        return torch.clip(precision, 0, 1)
 
 
 class MetricsLogger(object):
