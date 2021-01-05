@@ -26,7 +26,7 @@ class Visualizer(object):
 
     def _create_bar(self, values, names, fig_size):    
 
-        plt.figure(fig_size=fig_size)
+        plt.figure(figsize=fig_size)
         x = np.arange(len(names))
         rects = plt.bar(x, values)
         self._autolabel(rects)
