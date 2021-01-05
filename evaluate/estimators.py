@@ -5,10 +5,11 @@ import cv2
 
 class F3Estimator(object):
 
-    def __init__(self, data_path, cube_shape, metrics_logger):
+    def __init__(self, data_path, cube_shape, metrics_logger, mask_dilate=2):
         self.data_path = data_path
         self.metrics_logger = metrics_logger
         self.cube_shape = cube_shape
+        self.mask_dilate = mask_dilate
         self.faults_map, self.bbox_with_faults = self.create_annots()
         
 
@@ -58,7 +59,7 @@ class F3Estimator(object):
 
     
     def dilate_mask(self, mask):
-        kernel = np.ones((2,2), np.uint8)
+        kernel = np.ones((self.mask_dilate,self.mask_dilate), np.uint8)
         dilation = cv2.dilate(mask, kernel, iterations=1)
         return dilation
 
@@ -90,9 +91,10 @@ class F3Estimator(object):
 
 
 class LUKEstimator(object):
-    def __init__(self, data_path, cube_shape, metrics_logger):
+    def __init__(self, data_path, cube_shape, metrics_logger, mask_dilate):
         self.data_path = data_path
         self.metrics_logger = metrics_logger
+        self.mask_dilate = mask_dilate
         self.cube_shape = cube_shape
         self.faults_map, self.bbox_with_faults = self.create_annots()
 
@@ -212,7 +214,7 @@ class LUKEstimator(object):
 
 
     def dilate_mask(self, mask):
-        kernel = np.ones((2,2), np.uint8)
+        kernel = np.ones((self.mask_dilate,self.mask_dilate), np.uint8)
         dilation = cv2.dilate(mask, kernel, iterations=1)
         return dilation
 
