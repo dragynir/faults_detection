@@ -24,9 +24,9 @@ class Visualizer(object):
                         textcoords="offset points",
                         ha='center', va='bottom')
 
-    def _create_bar(self, values, names):    
+    def _create_bar(self, values, names, fig_size):    
 
-        plt.subplot()
+        plt.figure(fig_size=fig_size)
         x = np.arange(len(names))
         rects = plt.bar(x, values)
         self._autolabel(rects)
@@ -34,7 +34,7 @@ class Visualizer(object):
         axes.set_ylim([0,1])
         plt.xticks(x, names)
     
-    def show_results(self):
+    def show_results(self, fig_size):
 
         results = self.logger.results()
 
@@ -45,7 +45,7 @@ class Visualizer(object):
             avg_metric.append(value)
             names.append(metric_name)
    
-        self._create_bar(avg_metric, names)
+        self._create_bar(avg_metric, names, fig_size)
         
         
     def show_iter_results(self, figsize=(12, 12), alpha=0.5):
