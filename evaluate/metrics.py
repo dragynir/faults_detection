@@ -1,6 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
+from skimage.morphology import skeletonize
+import cv2
 
 class DiceMetric(nn.Module):
     def __init__(self, smooth=1):
@@ -113,3 +115,54 @@ class MetricsLogger(object):
     
     def results(self):
         return self.metrics_values
+
+
+
+
+class WidePrecision(nn.Module):
+    def __init__(self, buffer_size=3, smooth=1.):
+        super(WidePrecision, self).__init__()
+        self.kernel = np.ones((buffer_size, buffer_size)) 
+        self.name = 'wide_precision'
+        self.smooth = smooth
+
+    def forward(self, inputs, targets):
+        targets = targets.numpy()
+        targets = cv2.dilate(targets, self.kernel)
+        targets = torch.tensor(targets)
+
+
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        TP = (inputs * targets).sum()
+        FP = ((1 - targets) * inputs).sum()
+
+        precision = (TP + self.smooth) / (TP + FP + self.smooth)
+
+        return torch.clip(precision, 0, 1)
+
+
+class BufferRecall(nn.Module):
+    def __init__(self, buffer_size=3, treshold=0.3, smooth=1.):
+        super(BufferRecall, self).__init__()
+        self.kernel = np.ones((buffer_size, buffer_size))
+        self.treshold = treshold
+        self.name = 'buffer_recall'
+
+    
+    def forward(self, inputs, targets):
+        
+        wide_targets = cv2.dilate(targets.numpy(), self.kernel)
+        wide_targets = torch.tensor(wide_targets)
+
+        true_mask = inputs > self.treshold
+        inputs[true_mask] = 1
+        inputs[torch.logical_not(true_mask)] = 0
+        inputs = inputs.numpy()
+        inputs = torch.tensor(skeletonize(inputs).astype("float64"))
+
+        tp = torch.sum(wide_targets * inputs)
+        true_ = torch.sum(targets)
+
+        return torch.clip(tp / true_, 0, 1)

@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 import os
 import cv2
+from scipy.ndimage import distance_transform_edt
+from skimage.morphology import label
+from skimage.feature import peak_local_max
+from skimage.segmentation import mark_boundaries, watershed
+
 
 class F3Estimator(object):
 
@@ -63,7 +68,26 @@ class F3Estimator(object):
         dilation = cv2.dilate(mask, kernel, iterations=1)
         return dilation
 
-    def estimate(self, cube, pred_mask): 
+    def apply_watershed(self, prob, min_tr, max_tr):
+        
+        thresh = (prob >= max_tr).astype(np.uint8)
+        unknown = ((np.logical_and(prob > min_tr, prob < max_tr))).astype(np.uint8)
+
+        ret, markers = cv2.connectedComponents(thresh)
+
+        # background is not 0, but 1
+        markers = markers+1
+
+        # mark the region of unknown with zero
+        markers[unknown==1] = 0
+
+        img = np.repeat((prob * 255).astype(np.uint8)[..., None], 3, axis=-1)
+
+        watershed = cv2.watershed(img, markers)
+
+        return (watershed > 1).astype(np.float32)
+
+    def estimate(self, cube, pred_mask, use_watershed=False, min_tr=0.2, max_tr=0.6): 
         slice_shape = (462, 951)
 
         for iteration, sample in enumerate(self.bbox_with_faults):
@@ -83,10 +107,10 @@ class F3Estimator(object):
             true_slice = self.dilate_mask(self.faults_map[i][x:end_x, y:end_y].T)
             pred_slice = pred_mask[i][x:end_x, y:end_y].T
 
+            if use_watershed:
+                pred_slice = self.apply_watershed(pred_slice, min_tr, max_tr)
+
             self.metrics_logger.log(pred_slice, true_slice, seismic, bbox, iteration)
-
-
-
 
 
 
