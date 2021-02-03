@@ -87,7 +87,7 @@ class F3Estimator(object):
 
         return (watershed > 1).astype(np.float32)
 
-    def estimate(self, cube, pred_mask, use_watershed=False, min_tr=0.2, max_tr=0.6): 
+    def estimate(self, cube, pred_mask, use_watershed=False, min_tr=0.2, max_tr=0.6, mid_tr=-1): 
         slice_shape = (462, 951)
 
         for iteration, sample in enumerate(self.bbox_with_faults):
@@ -109,6 +109,8 @@ class F3Estimator(object):
 
             if use_watershed:
                 pred_slice = self.apply_watershed(pred_slice, min_tr, max_tr)
+            elif mid_tr != -1:
+                pred_slice = (pred_slice > mid_tr).astype(np.float32)
 
             self.metrics_logger.log(pred_slice, true_slice, seismic, bbox, iteration)
 
