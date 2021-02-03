@@ -106,6 +106,7 @@ class F3Estimator(object):
             seismic = cube[i][x:end_x, y:end_y].T
             true_slice = self.dilate_mask(self.faults_map[i][x:end_x, y:end_y].T)
             pred_slice = pred_mask[i][x:end_x, y:end_y].T
+            pred_slice = pred_slice.copy()
 
             if use_watershed:
                 pred_slice = self.apply_watershed(pred_slice, min_tr, max_tr)
