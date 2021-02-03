@@ -110,7 +110,8 @@ class F3Estimator(object):
             if use_watershed:
                 pred_slice = self.apply_watershed(pred_slice, min_tr, max_tr)
             elif mid_tr != -1:
-                pred_slice = (pred_slice > mid_tr).astype(np.float32)
+                pred_slice[pred_slice >= mid_tr] = 1.0
+                pred_slice[pred_slice < mid_tr] = 0.0
 
             self.metrics_logger.log(pred_slice, true_slice, seismic, bbox, iteration)
 
