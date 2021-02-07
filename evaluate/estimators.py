@@ -246,7 +246,6 @@ class LUKEstimator(object):
         dilation = cv2.dilate(mask, kernel, iterations=1)
         return dilation
 
-    
     def estimate(self, cube, pred_mask):        
         iteration = 0
         for iline, bboxes in self.bbox_with_faults.items():

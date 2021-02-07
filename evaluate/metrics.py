@@ -117,20 +117,17 @@ class MetricsLogger(object):
         return self.metrics_values
 
 
-
-
 class WidePrecision(nn.Module):
     def __init__(self, buffer_size=3, smooth=1.):
         super(WidePrecision, self).__init__()
         self.kernel = np.ones((buffer_size, buffer_size)) 
-        self.name = 'wide_precision'
+        self.name = 'Wide precision'
         self.smooth = smooth
 
     def forward(self, inputs, targets):
         targets = targets.numpy()
         targets = cv2.dilate(targets, self.kernel)
         targets = torch.tensor(targets)
-
 
         inputs = inputs.view(-1)
         targets = targets.view(-1)
@@ -142,13 +139,12 @@ class WidePrecision(nn.Module):
 
         return torch.clip(precision, 0, 1)
 
-
-class BufferRecall(nn.Module):
+class WideRecall(nn.Module):
     def __init__(self, buffer_size=3, treshold=0.3, smooth=1.):
-        super(BufferRecall, self).__init__()
+        super(WideRecall, self).__init__()
         self.kernel = np.ones((buffer_size, buffer_size))
         self.treshold = treshold
-        self.name = 'buffer_recall'
+        self.name = 'Wide recall'
 
     
     def forward(self, inputs, targets):
