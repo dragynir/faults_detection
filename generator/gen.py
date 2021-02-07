@@ -61,7 +61,7 @@ def FDA_source_to_target_np( src_img, trg_img, L=0.1 ):
 
 class DefineParams():
     """ Parameters for Creating Synthetic Traces """
-    def __init__(self, num_data, patch_size, target_traces, refl_model):
+    def __init__(self, num_data, patch_size, target_traces):
         size_tr = 200
         nx, ny, nz = ([patch_size]*3)
         nxy = nx*ny
@@ -77,7 +77,6 @@ class DefineParams():
 
         ' Target traces'
         self.target_traces = target_traces
-        self.refl_model = refl_model
         
         ' Feature Size '
         self.nx = nx                        # Height of input feature
@@ -570,12 +569,12 @@ class BaseSynt(SyntheticTraceCreator):
         self.scale_min_max_trace()
 
     
-def SyntheticSeisGen(path, synt_model, num_data, target_traces, refl_model=None, patch_size=128):
+def SyntheticSeisGen(path, synt_model, num_data, target_traces, patch_size=128):
 
     if not issubclass(synt_model, SyntheticTraceCreator):
         raise Exception('Invalid synt_model: must be class(SyntheticTraceCreator)')
 
-    prm = DefineParams(num_data, patch_size, target_traces, refl_model)    
+    prm = DefineParams(num_data, patch_size, target_traces)    
 
     path_traces = os.path.join(path, 'traces/')
     path_labels = os.path.join(path, 'labels/')
@@ -587,15 +586,10 @@ def SyntheticSeisGen(path, synt_model, num_data, target_traces, refl_model=None,
     os.makedirs(path_traces)
     os.makedirs(path_labels)
 
-
-
     logs = None
     for i in tqdm(range(num_data)):
         SynTr = synt_model(prm)       
         logs = SynTr.logs
-        fs = open(os.path.join(path_traces, str(i)+'.dat'), 'bw')
-        fl = open(os.path.join(path_labels, str(i)+'.dat'), 'bw')
-        SynTr.traces.flatten().astype('float32').tofile(fs, format='%.4f')
-        SynTr.labels.flatten().astype('float32').tofile(fl, format='%.4f')
-    
+        np.save(os.path.join(path_traces, str(i)), SynTr.traces)
+        np.save(os.path.join(path_labels, str(i)), SynTr.labels)
     print(logs)
