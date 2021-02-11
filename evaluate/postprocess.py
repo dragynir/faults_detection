@@ -12,7 +12,7 @@ class SurfaceExtractor:
         mcrop = mask.copy()
         mcrop[mcrop < low_threshold] = 0
         agr_sl = np.zeros_like(mcrop)
-        ep = argrelextrema(mcrop, np.greater, axis=axis)
+        ep = argrelmax(mcrop, np.greater, axis=axis)
         agr_sl[ep] = mcrop[ep]
         return agr_sl
 
