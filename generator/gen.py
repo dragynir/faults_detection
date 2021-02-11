@@ -8,7 +8,6 @@ import os
 import shutil
 import torch
 
-
 # https://github.com/YanchaoYang/FDA
 
 def low_freq_mutate_np( amp_src, amp_trg, L=0.1 ):
@@ -130,7 +129,6 @@ class DefineParams():
 
         self.snr_rng = (30, 100) # 30, 100             # Signal Noise Ratio (2,5) (24, 100)
         self.f0_rng = (20, 35)     
-              
 
         
 class GenerateParams:
@@ -364,7 +362,7 @@ class CreateSynthRefl(GenerateParams):
                 labels = self.labels.copy()
                 if i > 0:                
                     labels = replace(labels, idx_repl, x1, y1, z1, prm)
-                    treshold = 0.5 
+                    treshold = 0.3
                     labels[labels > treshold] = 1
                     labels[labels <= treshold] = 0                
                 flt_flag = (0.5*np.tan(self.dip[i]/180*np.pi)>abs(z-z_flt_plane)) & flag_offset
@@ -495,11 +493,12 @@ class SyntheticTraceCreator(CreateSynthRefl):
 
         t_shape = prm.target_traces.shape
 
-        start_x = np.random.randint(0, t_shape[0] - 128)
-        start_y = np.random.randint(0, t_shape[1] - 128)
-        start_z = np.random.randint(0, t_shape[2] - 128)
+        size = = prm.patch_size
+        start_x = np.random.randint(0, t_shape[0] - size)
+        start_y = np.random.randint(0, t_shape[1] - size)
+        start_z = np.random.randint(0, t_shape[2] - size)
 
-        size = 128
+        
         targets = prm.target_traces[start_x: start_x + size, start_y: start_y + size, start_z: start_z + size]
 
 
