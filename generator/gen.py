@@ -493,7 +493,7 @@ class SyntheticTraceCreator(CreateSynthRefl):
 
         t_shape = prm.target_traces.shape
 
-        size = = prm.patch_size
+        size = prm.patch_size
         start_x = np.random.randint(0, t_shape[0] - size)
         start_y = np.random.randint(0, t_shape[1] - size)
         start_z = np.random.randint(0, t_shape[2] - size)
