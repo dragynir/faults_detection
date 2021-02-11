@@ -92,7 +92,7 @@ class GaussianPredictor:
         mode: TestTime augs mode one of avg, max, none
 
     '''
-    def __init__(model, norm_func, overlap=12, input_dim=(128, 128, 128), mode='avg', dt=0.004, t_lng=0.082):
+    def __init__(self, model, norm_func, overlap=12, input_dim=(128, 128, 128), mode='avg', dt=0.004, t_lng=0.082):
         self.dt = dt
         self.model = model
         self.norm_func = norm_func
@@ -202,7 +202,7 @@ class GaussianPredictor:
         mk = np.zeros((p1,p2,p3),dtype=np.single)
         gs = np.zeros((1,n1,n2,n3,1),dtype=np.single)
         gp[0:m1,0:m2,0:m3]=gx
-        sc = self.getMask(os, input_dim)
+        sc = self.getMask(os, self.input_dim)
 
 
         for k1 in range(c1):
