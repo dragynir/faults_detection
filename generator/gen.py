@@ -76,6 +76,7 @@ class DefineParams():
 
         ' Target traces'
         self.target_traces = target_traces
+        self.patch_size = patch_size
         
         ' Feature Size '
         self.nx = nx                        # Height of input feature
