@@ -2,10 +2,12 @@ import copy
 import numpy as np
 import open3d as o3d
 import matplotlib.pyplot as plt
+from scipy.signal import argrelmax
+
 
 
 class SurfaceExtractor:
-    def __init__():
+    def __init__(self):
         pass
 
     def local_max_pool(self, mask, low_threshold, axis=1):
@@ -28,7 +30,7 @@ class SurfaceExtractor:
         return pcd
     
     def mask_to_pcd(self, mask, threshold=0):
-        m = (agr_sl > threshold).astype(np.float32)
+        m = (mask > threshold).astype(np.float32)
         points = np.array(np.nonzero(m))
         x, y, z = [points[i, :] for i in range(3)]
         points = np.stack([x, y, z], axis=-1)
@@ -36,7 +38,7 @@ class SurfaceExtractor:
         pcd.points = o3d.utility.Vector3dVector(points)
         return pcd
     
-    def extract_surface(pcd, kdtree_depth=16, n_threads=4, show=False):
+    def extract_surface(self, pcd, kdtree_depth=16, n_threads=4, show=False):
         mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
             pcd, depth=kdtree_depth, n_threads=n_threads, width=0, scale=1.1, linear_fit=False)
         densities = np.asarray(densities)
