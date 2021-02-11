@@ -20,7 +20,7 @@ class SurfaceExtractor:
         pass
 
     
-    def estimate_pcd_normals(self, pcd, radius=10, max_nn=10, knn=50)
+    def estimate_pcd_normals(self, pcd, radius=10, max_nn=10, knn=50):
         pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(
             radius=radius, max_nn=max_nn))
         pcd.orient_normals_consistent_tangent_plane(knn)
